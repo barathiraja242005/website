@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapbox India Map with Pollution Levels</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Mapbox CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; padding: 0; }
+
+        /* Photo frame style */
+        .photo-frame {
+            border: 10px solid #fff; /* White border */
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2); /* Shadow effect */
+            margin: 20px auto; /* Center the frame */
+            max-width: 500px; /* Max width of the frame */
+            padding: 10px;
+            background-color: #f8f9fa; /* Light background */
+        }
+
+        #map {
+            height: 400px;
+            width: 100%; /* Full width within the photo frame */
+        }
+
+        .map-overlay {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 200px;
+            top: 0;
+            left: 0;
+            padding: 10px;
+        }
+
+        .map-overlay .map-overlay-inner {
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .map-overlay-inner fieldset {
+            display: flex;
+            justify-content: space-between;
+            border: none;
+        }
+    </style>
+</head>
+<style>
+    
+</style>
+<body>
+    <div style="display: flex;">
+        <button style="justify-content: center;"><a href="/">Rturn To Home Page...</a></button>
+    </div> 
+
+<div class="container">
+    <div class="photo-frame">
+        <div id="map"></div>
+    </div>
+</div>
+
+<div style="position: relative;" class="map-overlay top">
+    <div class="map-overlay-inner">
+        
+        <fieldset>
+            <label for="showPlaceLabels">Show place labels</label>
+            <input type="checkbox" id="showPlaceLabels" checked="" class="form-check-input">
+        </fieldset>
+        <fieldset>
+            <label for="showPointOfInterestLabels">Show POI labels</label>
+            <input type="checkbox" id="showPointOfInterestLabels" checked="" class="form-check-input">
+        </fieldset>
+        <fieldset>
+            <label for="showRoadLabels">Show road labels</label>
+            <input type="checkbox" id="showRoadLabels" checked="" class="form-check-input">
+        </fieldset>
+        <fieldset>
+            <label for="showTransitLabels">Show transit labels</label>
+            <input type="checkbox" id="showTransitLabels" checked="" class="form-check-input">
+        </fieldset>
+    </div>
+</div>
+
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Mapbox JS -->
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiemhlbmZ1IiwiYSI6ImNsZnRmcHk0djAwZ2Izbm8wZjV1MGxsYTMifQ.gYl-MzNGpHbrwhoG2uttMA';
+    const map = new mapboxgl.Map({
+        container: 'map', // container ID
+        style: 'mapbox://styles/mapbox/streets-v11', // style URL
+        center: [78.9629, 20.5937], // starting position [lng, lat] for India
+        zoom: 4 // starting zoom
+    });
+
+    map.on('load', function () {
+        // GeoJSON data for pollution levels in major Indian cities
+        const pollutionData = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [77.1025, 28.7041] // Delhi
+                    },
+                    properties: {
+                        city: 'Delhi',
+                        pollutionLevel: 'PM2.5: 180 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [72.8777, 19.0760] // Mumbai
+                    },
+                    properties: {
+                        city: 'Mumbai',
+                        pollutionLevel: 'PM2.5: 90 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [77.5946, 12.9716] // Bangalore
+                    },
+                    properties: {
+                        city: 'Bangalore',
+                        pollutionLevel: 'PM2.5: 60 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [88.3639, 22.5726] // Kolkata
+                    },
+                    properties: {
+                        city: 'Kolkata',
+                        pollutionLevel: 'PM2.5: 120 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [80.9462, 26.8467] // Lucknow
+                    },
+                    properties: {
+                        city: 'Lucknow',
+                        pollutionLevel: 'PM2.5: 150 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [72.5714, 23.0225] // Ahmedabad
+                    },
+                    properties: {
+                        city: 'Ahmedabad',
+                        pollutionLevel: 'PM2.5: 140 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [78.4867, 17.3850] // Hyderabad
+                    },
+                    properties: {
+                        city: 'Hyderabad',
+                        pollutionLevel: 'PM2.5: 80 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [76.2711, 9.9312] // Kochi
+                    },
+                    properties: {
+                        city: 'Kochi',
+                        pollutionLevel: 'PM2.5: 50 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [85.1376, 25.5941] // Patna
+                    },
+                    properties: {
+                        city: 'Patna',
+                        pollutionLevel: 'PM2.5: 160 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [75.8577, 22.7196] // Indore
+                    },
+                    properties: {
+                        city: 'Indore',
+                        pollutionLevel: 'PM2.5: 70 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [73.8567, 18.5204] // Pune
+                    },
+                    properties: {
+                        city: 'Pune',
+                        pollutionLevel: 'PM2.5: 65 µg/m³'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [78.0421, 27.1767] // Agra
+                    },
+                    properties: {
+                        city: 'Agra',
+                        pollutionLevel: 'PM2.5: 130 µg/m³'
+                    }
+                }
+            ]
+        };
+
+        // Add GeoJSON source to the map
+        map.addSource('pollutionData', {
+            type: 'geojson',
+            data: pollutionData
+        });
+
+        // Add a layer to display the city points
+        map.addLayer({
+            id: 'cities',
+            type: 'circle',
+            source: 'pollutionData',
+            paint: {
+                'circle-radius': 8,
+                'circle-color': '#ff5722',
+                'circle-opacity': 0.8
+            }
+        });
+
+        // Add a popup on click
+        map.on('click', 'cities', function (e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(`<strong>${e.features[0].properties.city}</strong><br>Pollution Level: ${e.features[0].properties.pollutionLevel}`)
+                .addTo(map);
+        });
+
+        // Change the cursor to a pointer when over the city points
+        map.on('mouseenter', 'cities', function () {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        // Change it back to a default cursor when not over the city points
+        map.on('mouseleave', 'cities', function () {
+            map.getCanvas().style.cursor = '';
+        });
+    });
+
+    // Handle light preset change
+    document.getElementById('lightPreset').addEventListener('change', function () {
+        map.setStyle('mapbox://styles/mapbox/' + this.value + '-v11');
+    });
+
+    // Handle visibility of labels
+    document.querySelectorAll('.map-overlay-inner input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', function () {
+            const visibility = this.checked ? 'visible' : 'none';
+            const layerId = this.id.replace('show', '').replace('Labels', '-label').toLowerCase();
+            if (map.getLayer(layerId)) {
+                map.setLayoutProperty(layerId, 'visibility', visibility);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
